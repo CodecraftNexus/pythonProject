@@ -1,0 +1,259 @@
+openapi: 3.0.0
+info:
+  title: My Express API
+  version: 1.0.0
+  description: API Documentation for user management
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+
+tags:
+  - name: Users
+    description: User management endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        username:
+          type: string
+          example: John
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        Dateofbirth:
+          type: string
+          format: date
+          example: "1990-01-01"
+        Birthtime:
+          type: string
+          example: "20:40:50"
+        Location:
+          type: string
+          example: kaduwela
+        whatsappNumber:
+          type: string
+          example: "+94712345678"
+        ID_Number:
+          type: string
+          example: 12345678912
+        Image:
+          type: string
+          format: binary
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: Mypassword123!
+
+    loginSchema:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: Mypassword123!
+
+    User:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        username:
+          type: string
+          example: John
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        Dateofbirth:
+          type: string
+          format: date
+          example: "1990-01-01"
+        Birthtime:
+          type: string
+          example: "20:40:50"
+        Location:
+          type: string
+          example: kaduwela
+        whatsappNumber:
+          type: string
+          example: "+94712345678"
+        ID_Number:
+          type: string
+          example: 12345678912
+        Image:
+          type: string
+          format: binary
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: Mypassword123!
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Error message
+
+    loginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Login successful
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/users/register:
+    post:
+      summary: Create new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/users/login:
+    post:
+      summary: Login user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginSchema"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/users/update:
+    put:
+      summary: Update user profile
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+            image/jpeg:
+              examples:
+                preview:
+                  summary: Live Profile Picture Preview
+                  externalValue: "http://localhost:5000/uploads/profile/123-1739467890123.jpg"
+
+            image/png:
+              examples:
+                preview:
+                  summary: Live Profile Picture Preview
+                  externalValue: "http://localhost:5000/uploads/profile/123-1739467890123.jpg"
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+
+  /api/users/me:
+    get:
+      summary: Get current user data
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

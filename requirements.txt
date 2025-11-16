@@ -1,0 +1,9 @@
+pyjwt
+python-dotenv
+flask
+flasgger
+flask_sqlalchemy
+flask-cors
+flask-jwt-extended
+flask-swagger-ui
+pymysql
